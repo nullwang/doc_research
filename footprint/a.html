@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="gb2312" />
+<title>地图坐标概念</title>
+<script src="http://api.map.baidu.com/api?v=1.2"></script>
+</head>
+<body>
+<div id="map_container" style="width:900px;height:480px;"></div>
+<script>
+var map = new BMap.Map("map_container");            // 创建Map实例
+var point = new BMap.Point(116.404, 39.915);    // 创建点坐标
+map.centerAndZoom(point,15);                     // 初始化地图,设置中心点坐标和地图级别。
+map.enableScrollWheelZoom();                            //启用滚轮放大缩小
+
+
+point = new BMap.Point(121.48,31.22);  // 创建点坐标  
+var marker = new BMap.Marker(point);   
+map.centerAndZoom(point,15); 
+var label = new BMap.Label("设备2,时间20150101",{offset:new BMap.Size(20,-10)});
+marker.setLabel(label);
+map.addOverlay(marker); 
+var lab1 = new BMap.Label("2", { position: point, offset: new BMap.Size(-10, -25) });
+	lab1.setStyle({
+  color: "#fff",
+  fontSize: "16px",
+  backgroundColor: "0.05",
+  border: "0",
+  fontWeight: "bold"
+});
+map.addOverlay(lab1);
+//BMap.Convertor.translate(point,0,translateCallback);
+
+point = new BMap.Point(121.49,31.23);  // 创建点坐标  
+var marker = new BMap.Marker(point);   
+var label = new BMap.Label("设备3,时间20150102",{offset:new BMap.Size(20,-10)});
+marker.setLabel(label);
+map.addOverlay(marker); 
+var lab1 = new BMap.Label("3", { position: point, offset: new BMap.Size(-10, -25) });
+	lab1.setStyle({
+  color: "#fff",
+  fontSize: "16px",
+  backgroundColor: "0.05",
+  border: "0",
+  fontWeight: "bold"
+});
+map.addOverlay(lab1);
+
+//BMap.Convertor.translate(point,0,translateCallback);
+var polyline = new BMap.Polyline([
+  new BMap.Point(121.50,31.21),
+  new BMap.Point(121.48,31.22),
+  //new BMap.Point(116.405, 39.920),
+  new BMap.Point(121.49,31.23)
+],{ strokeColor: "green", strokeWeight: 2, strokeOpacity: 1 });
+map.addOverlay(polyline );
+
+point = new BMap.Point(121.50,31.21);  // 创建点坐标  
+var marker = new BMap.Marker(point);
+var label = new BMap.Label("设备1,时间20150102",{offset:new BMap.Size(20,-10)});
+marker.setLabel(label);
+map.addOverlay(marker);
+var lab1 = new BMap.Label("1", { position: point, offset: new BMap.Size(-10, -25) });
+	lab1.setStyle({
+  color: "#fff",
+  fontSize: "16px",
+  backgroundColor: "0.05",
+  border: "0",
+  fontWeight: "bold"
+});
+map.addOverlay(lab1);
+
+//添加info window
+winfowText ="设备介绍: 电子栅栏"
+ var infoWindow = new BMap.InfoWindow(winfowText, { enableMessage: false, width: 30, height: 20 });
+ marker.addEventListener("click", function () {
+                        this.openInfoWindow(infoWindow);
+                    });
+                 
+                    
+
+//1、定义构造函数并继承Overlay
+//定义自定义覆盖物的构造函数  
+ function SquareOverlay(center, length, color) {
+        this._center = center;
+        this._length = length;
+        this._color = color;
+    }
+    
+    //坐标转换完之后的回调函数
+function translateCallback(point1){
+    var marker1 = new BMap.Marker(point1);
+    map.addOverlay(marker1);
+    var label = new BMap.Label("轨迹",{offset:new BMap.Size(20,-10)});
+    marker1.setLabel(label); //添加百度label
+    map.setCenter(point1);
+}
+
+ // 继承API的BMap.Overlay  
+    SquareOverlay.prototype = new BMap.Overlay();
+
+//2、初始化自定义覆盖物
+    // 实现初始化方法  
+    SquareOverlay.prototype.initialize = function (map) {
+        // 保存map对象实例  
+        this._map = map;
+        // 创建div元素，作为自定义覆盖物的容器  
+        var div = document.createElement("div");
+        div.style.position = "absolute";
+        // 可以根据参数设置元素外观  
+        div.style.width = this._length + "px";
+        div.style.height = this._length + "px";
+        div.style.background = this._color;
+        div.appendChild(document.createTextNode("覆盖物测试"));
+
+        // 将div添加到覆盖物容器中  
+        map.getPanes().markerPane.appendChild(div);
+        // 保存div实例  
+        this._div = div;
+        // 需要将div元素作为方法的返回值，当调用该覆盖物的show、  
+        // hide方法，或者对覆盖物进行移除时，API都将操作此元素。  
+        return div;
+    }
+
+    //3、绘制覆盖物
+    // 实现绘制方法  
+    SquareOverlay.prototype.draw = function () {
+        // 根据地理坐标转换为像素坐标，并设置给容器 
+          var position = this._map.pointToOverlayPixel(this._center);
+          this._div.style.left = position.x - this._length / 2 + "px";
+          this._div.style.top = position.y - this._length / 2 + "px";       
+    }
+
+    //4、显示和隐藏覆盖物
+    // 实现显示方法  
+    SquareOverlay.prototype.show = function () {
+        if (this._div) {
+            this._div.style.display = "";
+        }
+    }
+    // 实现隐藏方法  
+    SquareOverlay.prototype.hide = function () {
+        if (this._div) {
+            this._div.style.display = "none";
+        }
+    }
+
+    //5、添加其他覆盖物方法
+    //比如，改变颜色 
+    SquareOverlay.prototype.yellow = function () {
+        if (this._div) {
+            this._div.style.background = "yellow";
+        }
+    }
+
+    //6、自定义覆盖物添加事件方法
+    SquareOverlay.prototype.addEventListener = function (event, fun) {
+			this._div['on' + event] = fun;
+    }
+
+    //7、添加自定义覆盖物
+    //var mySquare = new SquareOverlay(map.getCenter(), 100, "red");
+    //map.addOverlay(mySquare);
+
+    //8、 为自定义覆盖物添加点击事件
+    /*mySquare.addEventListener('click', function () {
+        alert('haveTest');
+        }); 
+        */
+</script>
+</body>
+</html>

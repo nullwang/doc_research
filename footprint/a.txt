@@ -1,0 +1,15 @@
+﻿gis 文档
+http://malagis.com/baidu-maps-api-map-coordinate-conversion.html
+
+让OpenLayers添加百度地图(未完版）
+http://www.cnblogs.com/laoyu/archive/2012/06/10/2544379.html
+
+Google地图百度地图GPS经纬度偏移转换(JAVA)
+http://my.oschina.net/Thinkeryjgfn/blog/402565?fromerr=NwvOu4GN
+
+http://www.cnblogs.com/wujy/p/3897501.html?utm_source=tuicool&utm_medium=referral
+
+百度地图API开发指南
+http://developer.51cto.com/art/201110/298662.htm
+
+
